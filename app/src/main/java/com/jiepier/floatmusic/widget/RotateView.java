@@ -154,7 +154,6 @@ public class RotateView extends View {
         public void handleMessage(Message msg) {
             if (msg.what == MSG_RUN){
                 if (isRunning){
-                    mRotation += 0.1f;
                     if (mRotation >= 360)
                         mRotation = 0;
 
@@ -164,4 +163,8 @@ public class RotateView extends View {
             }
         }
     };
+
+    public void rotate(int angle){
+        this.mRotation = mRotation;
+    }
 }

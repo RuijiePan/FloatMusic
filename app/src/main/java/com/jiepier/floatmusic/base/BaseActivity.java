@@ -15,6 +15,7 @@ import android.view.WindowManager;
 
 import com.jiepier.floatmusic.service.PlayService;
 import com.jiepier.floatmusic.util.AppManager;
+import com.jiepier.floatmusic.util.MusicUtil;
 import com.jiepier.floatmusic.util.ResourceUtil;
 import com.jiepier.floatmusic.util.StatusBarUtil;
 
@@ -138,7 +139,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private PlayService.OnMusicEventListener mMusicEventListener = new PlayService.OnMusicEventListener() {
         @Override
         public void onPublish(int percent) {
-            BaseActivity.this.onPublish(percent);
+            BaseActivity.this.onPublish(percent*100/ MusicUtil.sMusicList.get(mPlayService.getPlayingPosition()).getDuration());
         }
 
         @Override

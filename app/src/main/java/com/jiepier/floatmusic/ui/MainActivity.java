@@ -1,5 +1,6 @@
 package com.jiepier.floatmusic.ui;
 
+import android.content.Intent;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.jiepier.floatmusic.R;
 import com.jiepier.floatmusic.adapter.MusicAdapter;
+import com.jiepier.floatmusic.base.App;
 import com.jiepier.floatmusic.base.BaseActivity;
 import com.jiepier.floatmusic.bean.Music;
 import com.jiepier.floatmusic.util.MusicUtil;
@@ -60,6 +62,8 @@ public class MainActivity extends BaseActivity implements SeekBar.OnSeekBarChang
                     @Override
                     public void onItemClick(int position) {
                         mPlayService.play(position);
+                        Intent intent = new Intent(App.sContext,PlayActivity.class);
+                        startActivity(intent);
                     }
                 });
 
