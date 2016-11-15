@@ -165,6 +165,6 @@ public class RotateView extends View {
     };
 
     public void rotate(int angle){
-        this.mRotation = mRotation;
+        this.mRotation = angle;
     }
 }

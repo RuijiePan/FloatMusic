@@ -40,7 +40,7 @@ public class PlayActivity extends BaseActivity {
 
     @Override
     public void onPublish(int percent) {
-        //rotateView.rotate(percent*360);
+        rotateView.rotate(percent*360);
     }
 
     @Override
