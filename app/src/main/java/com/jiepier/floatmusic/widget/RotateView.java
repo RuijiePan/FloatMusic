@@ -1,6 +1,7 @@
 package com.jiepier.floatmusic.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -23,19 +24,28 @@ import com.jiepier.floatmusic.R;
 public class RotateView extends View {
 
     private static final int MSG_RUN = 0x00000100;
-    private static final int TIME_UPDATE = 50;
+    private static final int TIME_UPDATE = 16;
 
-    private Bitmap mCircleBitmap;
     private Bitmap mClipBitmap;//cd图片
 
     private Matrix mMatrix;
     private float mRotation = 0.0f;
     private volatile boolean isRunning;
 
+    private Paint paint;
+    private int ringColor;
+    private float ringWidth;
+
     public RotateView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mCircleBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.cd_center);
+
         mMatrix = new Matrix();
+
+        paint = new Paint();
+        TypedArray mTypedArray = context.obtainStyledAttributes(attrs, R.styleable.RoundProgressBar);
+        ringColor = mTypedArray.getColor(R.styleable.RoundProgressBar_ringColor,0xff50c0e9);
+        ringWidth = mTypedArray.getDimension(R.styleable.RoundProgressBar_ringWidth, 20);
+        mTypedArray.recycle();
     }
 
     public RotateView(Context context, AttributeSet attrs) {
@@ -53,18 +63,18 @@ public class RotateView extends View {
             return;
         }
 
-        int width = 0;
-        int height = 0;
+            int width = 0;
+            int height = 0;
 
-        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+            int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+            int heightMode = MeasureSpec.getMode(heightMeasureSpec);
 
-        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+            int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+            int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-        if (widthMode == MeasureSpec.EXACTLY){
-            width = widthSize;
-        }else {
+            if (widthMode == MeasureSpec.EXACTLY){
+                width = widthSize;
+            }else {
             width = mClipBitmap.getWidth();
             //子view不能大于父类
             if (widthMode == MeasureSpec.AT_MOST){
@@ -91,10 +101,20 @@ public class RotateView extends View {
         canvas.save();
         mMatrix.setRotate(mRotation,getMeasuredWidth()/2,getMeasuredHeight()/2);
         canvas.drawBitmap(mClipBitmap,mMatrix,null);
-        canvas.drawBitmap(mCircleBitmap,
-                (getMeasuredWidth() - mCircleBitmap.getWidth()) / 2,
-                (getMeasuredHeight() - mCircleBitmap.getHeight()) / 2, null);
         canvas.restore();
+
+        int center = getWidth()/2;//圆心的x坐标
+        int radius = (int) (center-ringWidth/2);
+
+        /**
+         * 画最外层的大圆环
+         */
+        paint.setColor(ringColor);//设置圆环的颜色
+        paint.setStyle(Paint.Style.STROKE);//设置空心
+        paint.setStrokeWidth(ringWidth); //设置圆环的宽度
+        paint.setAntiAlias(true);  //消除锯齿
+        canvas.drawCircle(center, center, radius, paint); //画出圆环
+
     }
 
     private Bitmap cretaeCircleBitmap(Bitmap src){
@@ -107,7 +127,7 @@ public class RotateView extends View {
 
         Canvas canvas = new Canvas(target);
         canvas.drawCircle(getMeasuredWidth() / 2, getMeasuredWidth() / 2,
-                getMeasuredWidth() / 2, paint);
+                getMeasuredWidth() / 2-20, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(src, 0, 0, paint);
 
@@ -149,22 +169,20 @@ public class RotateView extends View {
         isRunning = false;
     }
 
-    public Handler mHandler = new Handler(){
-        @Override
+    private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
-            if (msg.what == MSG_RUN){
-                if (isRunning){
+            if (msg.what == MSG_RUN) {
+                if (isRunning) {
                     if (mRotation >= 360)
                         mRotation = 0;
-
                     invalidate();
-                    sendEmptyMessageDelayed(MSG_RUN,TIME_UPDATE);
+                    sendEmptyMessageDelayed(MSG_RUN, TIME_UPDATE);
                 }
             }
         }
     };
 
-    public void rotate(int angle){
-        this.mRotation = angle;
+    public void rotate(float angle){
+        this.mRotation = (float) (angle*3.6);
     }
 }
