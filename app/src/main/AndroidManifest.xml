@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:vmSafeMode="true"
         android:allowClearUserData="true"
-        android:hardwareAccelerated="true"
+        android:hardwareAccelerated="false"
         android:name=".base.App"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.SplashActivity">

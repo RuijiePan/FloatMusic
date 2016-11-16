@@ -12,16 +12,19 @@ import android.graphics.PorterDuffXfermode;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.jiepier.floatmusic.R;
+import com.jiepier.floatmusic.base.App;
+import com.jiepier.floatmusic.util.ImageTools;
 
 /**
  * Created by JiePier on 16/11/12.
  * 旋转cd
  */
 
-public class RotateView extends View {
+public class RotateView extends View{
 
     private static final int MSG_RUN = 0x00000100;
     private static final int TIME_UPDATE = 16;
@@ -35,6 +38,8 @@ public class RotateView extends View {
     private Paint paint;
     private int ringColor;
     private float ringWidth;
+
+    private double scale;
 
     public RotateView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -99,12 +104,12 @@ public class RotateView extends View {
             return;
 
         canvas.save();
-        mMatrix.setRotate(mRotation,getMeasuredWidth()/2,getMeasuredHeight()/2);
+        mMatrix.setRotate(mRotation,(float) (getMeasuredWidth()/2*scale),(float)((getMeasuredHeight()/2*scale)-(ringWidth*(scale+0.1)*10)));
         canvas.drawBitmap(mClipBitmap,mMatrix,null);
         canvas.restore();
 
-        int center = getWidth()/2;//圆心的x坐标
-        int radius = (int) (center-ringWidth/2);
+        int center = (int)(getWidth()/2*scale);//圆心的x坐标
+        int radius = (int)(center-ringWidth/2);
 
         /**
          * 画最外层的大圆环
@@ -127,14 +132,17 @@ public class RotateView extends View {
 
         Canvas canvas = new Canvas(target);
         canvas.drawCircle(getMeasuredWidth() / 2, getMeasuredWidth() / 2,
-                getMeasuredWidth() / 2-20, paint);
+                (float) getMeasuredWidth()/2-ringWidth, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(src, 0, 0, paint);
 
         return target;
     }
 
-    public void setCdImage(Bitmap bitmap){
+    public void setCdImage(Bitmap bitmap,double scale){
+        this.scale = scale;
+        bitmap = ImageTools.scaleBitmap(bitmap,
+                (int) (App.sScreenWidth * scale));
         int widthSize = bitmap.getWidth();
         int heightSize = bitmap.getHeight();
         int widthSpec = MeasureSpec.makeMeasureSpec(widthSize,
@@ -185,4 +193,23 @@ public class RotateView extends View {
     public void rotate(float angle){
         this.mRotation = (float) (angle*3.6);
     }
+
+    /*@Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        int x = (int) event.getX();
+        int y = (int) event.getY();
+
+        switch (event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
+        }
+        return super.onTouchEvent(event);
+    }*/
+
 }
+

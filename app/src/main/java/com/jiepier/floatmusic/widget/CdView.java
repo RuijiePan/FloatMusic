@@ -41,8 +41,6 @@ public class CdView extends View{
         ringColor = mTypedArray.getColor(R.styleable.RoundProgressBar_ringColor,0xff50c0e9);
         ringWidth = mTypedArray.getDimension(R.styleable.RoundProgressBar_ringWidth, 20);
         mTypedArray.recycle();
-
-
     }
 
     @Override
